@@ -1,0 +1,26 @@
+services:
+  fastapi:
+    build: .
+    restart: always
+    env_file: .env
+    ports:
+      - "8000:8000"
+    networks:
+      - survey-network
+  mongodb:
+    image: mongo:7.0
+    ports:
+      - "27017:27017"
+    env_file: .env
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - survey-network
+  
+networks:
+  survey-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local
