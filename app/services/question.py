@@ -1,8 +1,9 @@
 from bson import ObjectId
 from fastapi import HTTPException
+
 from app.api.schemas.question import QuestionCreate, QuestionUpdate
-from app.models.survey import Survey
 from app.core.database import db
+from app.models.survey import Survey
 
 
 class QuestionService:
@@ -20,7 +21,7 @@ class QuestionService:
             "question_id": question_create.question_id,
             "title": question_create.title,
             "type": question_create.type,
-            "answers": question_create.answers,
+            "options": question_create.options,
         }
         await collection.update_one(
             {"_id": ObjectId(question_create.survey_id)},
@@ -50,7 +51,7 @@ class QuestionService:
             "question_id": question_update.question_id,
             "title": question_update.title,
             "type": question_update.type,
-            "answers": question_update.answers,
+            "options": question_update.options,
         }
         await collection.update_one(
             {"_id": ObjectId(survey["id"])},

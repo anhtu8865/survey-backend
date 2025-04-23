@@ -11,11 +11,11 @@ class QuestionCreate(BaseModel):
     question_id: str
     title: str
     type: QuestionType
-    answers: List[str]
+    options: List[str]
 
 
 class QuestionUpdate(BaseModel):
     question_id: str
     title: str
     type: QuestionType
-    answers: List[str]
+    options: List[str]
