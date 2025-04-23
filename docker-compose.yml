@@ -3,6 +3,8 @@ services:
     build: .
     restart: always
     env_file: .env
+    volumes:
+      - ./:/app
     ports:
       - "8000:8000"
     networks:
