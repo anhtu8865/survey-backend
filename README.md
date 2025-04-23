@@ -1,13 +1,4 @@
-## Install python 3.12.8
-
-## Install dependencies
-
+## Start the app
 ```bash
-pip install -r requirements.txt
-```
-
-## Run the app
-
-```bash
-python run.py
+docker compose up
 ```

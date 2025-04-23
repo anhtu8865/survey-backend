@@ -1,5 +1,8 @@
+from typing import Any, List
+
 from pydantic import BaseModel
-from typing import Any
+
+from app.models.question import QuestionType
 
 
 class QuestionCreate(BaseModel):
@@ -7,12 +10,12 @@ class QuestionCreate(BaseModel):
     index: int
     question_id: str
     title: str
-    type: str
-    answers: Any
+    type: QuestionType
+    answers: List[str]
 
 
 class QuestionUpdate(BaseModel):
     question_id: str
     title: str
-    type: str
-    answers: Any
+    type: QuestionType
+    answers: List[str]

@@ -1,9 +1,17 @@
+from enum import Enum
+from typing import Any, List
+
 from pydantic import BaseModel
-from typing import Any
+
+
+class QuestionType(str, Enum):
+    TEXT = "text"
+    SINGLE = "single"
+    MULTIPLE = "multiple"
 
 
 class Question(BaseModel):
     question_id: str
     title: str
-    type: str
-    answers: Any
+    type: QuestionType
+    answers: List[str]
