@@ -1,14 +1,17 @@
 from bson import ObjectId
-from fastapi import HTTPException
+from fastapi import Depends, HTTPException
+from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.api.schemas.question import QuestionCreate, QuestionUpdate
-from app.core.database import db
+from app.core.database import get_db
 from app.models.survey import Survey
 
 
 class QuestionService:
-    async def create(question_create: QuestionCreate, survey: Survey):
-        collection = db["surveys"]
+    def __init__(self, db: AsyncIOMotorDatabase):
+        self.collection = db["surveys"]
+
+    async def create(self, question_create: QuestionCreate, survey: Survey):
         if question_create.index > len(survey["questions"]):
             raise HTTPException(status_code=400, detail="Index out of range")
 
@@ -23,7 +26,7 @@ class QuestionService:
             "type": question_create.type,
             "options": question_create.options,
         }
-        await collection.update_one(
+        await self.collection.update_one(
             {"_id": ObjectId(question_create.survey_id)},
             {
                 "$push": {
@@ -36,8 +39,7 @@ class QuestionService:
         )
         return {"message": "Question created successfully"}
 
-    async def update(question_update: QuestionUpdate, survey: Survey, index: int):
-        collection = db["surveys"]
+    async def update(self, question_update: QuestionUpdate, survey: Survey, index: int):
         if index >= len(survey["questions"]):
             raise HTTPException(status_code=400, detail="Index out of range")
 
@@ -53,22 +55,24 @@ class QuestionService:
             "type": question_update.type,
             "options": question_update.options,
         }
-        await collection.update_one(
+        await self.collection.update_one(
             {"_id": ObjectId(survey["id"])},
             {"$set": {f"questions.{index}": data_update}},
         )
         return {"message": "Question updated successfully"}
 
-    async def delete(survey: Survey, index: int):
-        collection = db["surveys"]
+    async def delete(self, survey: Survey, index: int):
         if index >= len(survey["questions"]):
             raise HTTPException(status_code=400, detail="Index out of range")
-        await collection.update_one(
+        await self.collection.update_one(
             {"_id": ObjectId(survey["id"])},
             {"$unset": {f"questions.{index}": ""}},
         )
-        await collection.update_one(
+        await self.collection.update_one(
             {"_id": ObjectId(survey["id"])},
             {"$pull": {"questions": None}},
         )
         return {"message": "Question deleted successfully"}
+
+async def get_question_service(db=Depends(get_db)):
+    return QuestionService(db)
